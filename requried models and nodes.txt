@@ -1,0 +1,54 @@
+#!/bin/bash
+
+# ==============================================================================
+# MODELS NEEDED FOR WORKFLOW:
+# 1. UNET: qwen_image_edit_fp8_e4m3fn.safetensors (~20GB)
+# 2. CLIP: qwen_2.5_vl_7b_fp8_scaled.safetensors (~14GB)
+# 3. VAE: qwen_image_vae.safetensors (~250MB)
+# 4. LoRAs: Qwen-Image-Lightning (4-step & 8-step), beuauty10.safetensors
+# ==============================================================================
+
+COMFYUI_PATH="/workspace/ComfyUI"
+
+# --- Install Custom Nodes ---
+cd $COMFYUI_PATH/custom_nodes
+
+git clone https://github.com/ltdrdata/ComfyUI-Manager.git
+git clone https://github.com/cubiq/ComfyUI_essentials.git
+git clone https://github.com/evanspearman/ComfyMath.git
+git clone https://github.com/melMass/comfy_mtb.git
+git clone https://github.com/kijai/ComfyUI-KJNodes.git
+git clone https://github.com/TinyTerra/ComfyUI-TinyTerraNodes.git
+git clone https://github.com/lrzjason/Comfyui-QwenEditUtils.git
+
+# --- Download Models ---
+
+# UNET / Diffusion Models
+mkdir -p $COMFYUI_PATH/models/diffusion_models
+wget -O $COMFYUI_PATH/models/diffusion_models/qwen_image_edit_fp8_e4m3fn.safetensors \
+"https://huggingface.co/Comfy-Org/Qwen-Image-Edit_ComfyUI/resolve/main/split_files/diffusion_models/qwen_image_edit_fp8_e4m3fn.safetensors"
+
+# CLIP / Text Encoders
+mkdir -p $COMFYUI_PATH/models/text_encoders
+wget -O $COMFYUI_PATH/models/text_encoders/qwen_2.5_vl_7b_fp8_scaled.safetensors \
+"https://huggingface.co/Comfy-Org/Qwen-Image_ComfyUI/resolve/main/split_files/text_encoders/qwen_2.5_vl_7b_fp8_scaled.safetensors"
+
+# VAE
+mkdir -p $COMFYUI_PATH/models/vae
+wget -O $COMFYUI_PATH/models/vae/qwen_image_vae.safetensors \
+"https://huggingface.co/Comfy-Org/Qwen-Image_ComfyUI/resolve/main/split_files/vae/qwen_image_vae.safetensors"
+
+# LoRAs
+mkdir -p $COMFYUI_PATH/models/loras
+wget -O $COMFYUI_PATH/models/loras/Qwen-Image-Lightning-4steps-V1.0.safetensors \
+"https://huggingface.co/lightx2v/Qwen-Image-Lightning/resolve/main/Qwen-Image-Lightning-4steps-V1.0.safetensors"
+
+wget -O $COMFYUI_PATH/models/loras/Qwen-Image-Lightning-8steps-V1.1.safetensors \
+"https://huggingface.co/lightx2v/Qwen-Image-Lightning/resolve/main/Qwen-Image-Lightning-8steps-V1.1.safetensors"
+
+# --- Install Python Dependencies for Custom Nodes ---
+cd $COMFYUI_PATH
+pip install -r custom_nodes/comfy_mtb/requirements.txt
+pip install -r custom_nodes/ComfyUI-KJNodes/requirements.txt
+
+echo "Setup Complete. Restart ComfyUI to load nodes and models."
