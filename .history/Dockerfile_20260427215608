@@ -12,11 +12,10 @@ ENV DEBIAN_FRONTEND=noninteractive \
 
 ARG INSTALL_MODELS=1
 ARG HF_TOKEN=
-ARG LORA_REMOVE_CLOTHING_URL=https://huggingface.co/TomaOmito/Qwen-Edit-2509-Lora-Remove-Clothing/resolve/main/remove_clothing.safetensors
+ARG LORA_REMOVE_CLOTHING_URL=
 ARG LORA_BEAUTY10_URL=
 ARG APP_PRIVATE_LORAS_DIR=models/loras
 ARG REQUIRE_PRIVATE_LORAS=1
-ARG ALLOW_BEAUTY10_FALLBACK=1
 
 WORKDIR /workspace
 
@@ -144,15 +143,10 @@ RUN set -eux; \
             }; \
             required_remove_clothing="${COMFYUI_PATH}/models/loras/qwen_image_edit_remove-clothing_v1.0.safetensors"; \
             required_beauty10="${COMFYUI_PATH}/models/loras/beuauty10.safetensors"; \
-            fallback_lora="${COMFYUI_PATH}/models/loras/Qwen-Image-Lightning-8steps-V1.1.safetensors"; \
             copy_model_if_present "${APP_PATH}/${APP_PRIVATE_LORAS_DIR}/qwen_image_edit_remove-clothing_v1.0.safetensors" "$required_remove_clothing"; \
             copy_model_if_present "${APP_PATH}/${APP_PRIVATE_LORAS_DIR}/beuauty10.safetensors" "$required_beauty10"; \
             download_if_missing "${LORA_REMOVE_CLOTHING_URL}" "$required_remove_clothing"; \
             download_if_missing "${LORA_BEAUTY10_URL}" "$required_beauty10"; \
-            if [ ! -f "$required_beauty10" ] && [ "${ALLOW_BEAUTY10_FALLBACK}" = "1" ] && [ -f "$fallback_lora" ]; then \
-                cp "$fallback_lora" "$required_beauty10"; \
-                echo "Created fallback LoRA file at $required_beauty10 from $fallback_lora"; \
-            fi; \
             if [ "${REQUIRE_PRIVATE_LORAS}" = "1" ]; then \
                 missing=0; \
                 if [ ! -f "$required_remove_clothing" ]; then \
@@ -176,8 +170,6 @@ RUN set -eux; \
 # - build args:
 # - LORA_REMOVE_CLOTHING_URL
 # - LORA_BEAUTY10_URL
-# Beauty10 fallback can be auto-created from Lightning 8-step when missing:
-# - ALLOW_BEAUTY10_FALLBACK=1 (default)
 
 EXPOSE 8188
 
