@@ -1,8 +1,19 @@
+# Python artifacts
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
+
+# Logs & editor state
 *.log
 .git/
 .history/
 .vscode/
+
+# Zip archives / scratch files
+*.zip
+
+# The models/loras/ directory is intentionally INCLUDED in the build context
+# so that local private LoRA files can be COPY-d into the image.
+# Add specific exclusions below only if needed, e.g.:
+# models/loras/my_draft_lora.safetensors
